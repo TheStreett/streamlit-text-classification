@@ -194,7 +194,13 @@ def main():
     else:
         auth_token = params['token'][0]
 
-    st.header("Titanic Survival Classification")
+    st.header("IMDB Movie Review Classification")
+
+    labels = []
+    statuses = []
+    uuids = []
+    datetimes = []
+    inputs = []
 
     with st.expander("Show developer's guide"):
         st.markdown("#### Guide to build a streamlit app with modelshare's API.")
@@ -274,13 +280,6 @@ label = predict(data, playground_url, auth_token)
         with col2:
             metric_placeholder = st.empty()
             metric_placeholder.metric(label="Request count", value=0)
-    
-    
-    labels = []
-    statuses = []
-    uuids = []
-    datetimes = []
-    inputs = []
          
     if input_type == "Single":
         if single_predict:
