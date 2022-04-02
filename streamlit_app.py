@@ -194,13 +194,13 @@ def main():
     else:
         auth_token = params['token'][0]
 
-    st.header("IMDB Movie Review Classification")
-
     labels = []
     statuses = []
     uuids = []
     datetimes = []
     inputs = []
+    
+    st.header("IMDB Movie Review Classification")
 
     with st.expander("Show developer's guide"):
         st.markdown("#### Guide to build a streamlit app with modelshare's API.")
