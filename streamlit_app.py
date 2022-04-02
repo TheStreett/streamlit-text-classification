@@ -254,26 +254,36 @@ label = predict(data, playground_url, auth_token)
         col1, col2 = st.columns([1, 1])
 
         with col1:
-            uploaded_file = st.file_uploader(
-                label="Choose one csv and get the prediction",
-                type=["csv"],
-                accept_multiple_files=False,
+            input_type = st.radio(
+                "Input type",
+                ('Single', 'Batch')
             )
+            
+            if input_type == "Single":
+                text_input = st.text_input('Enter your text here')
+                single_predict = st.button("Predict")
+            else:
+                uploaded_file = st.file_uploader(
+                    label="Choose one csv and get the prediction",
+                    type=["csv"],
+                    accept_multiple_files=False,
+                )
 
-            download_data_sample(playground_url, auth_token)
+                download_data_sample(playground_url, auth_token)
 
         with col2:
             metric_placeholder = st.empty()
             metric_placeholder.metric(label="Request count", value=0)
     
-    if uploaded_file:
-        labels = []
-        statuses = []
-        uuids = []
-        datetimes = []
-        data_frame = pd.read_csv(uploaded_file)
-        inputs = []
-        for _, row in data_frame.iterrows():
+    
+    labels = []
+    statuses = []
+    uuids = []
+    datetimes = []
+    inputs = []
+         
+    if input_type == "Single":
+        if single_predict:
             try:
                 # Create identifier for this prediction
                 uuid_str = str(uuid.uuid4())
@@ -285,8 +295,8 @@ label = predict(data, playground_url, auth_token)
                 datetimes.append(date_time)
 
                 # Classify the record
-                inputs.append(row['text'])
-                label = predict(row['text'], uuid_str, playground_url, auth_token)
+                inputs.append(text_input)
+                label = predict(text_input, uuid_str, playground_url, auth_token)
 
                 # Insert the label into labels
                 labels.append(label)
@@ -301,9 +311,43 @@ label = predict(data, playground_url, auth_token)
                     labels.append(None)
                 statuses.append(False)
 
-        metric_placeholder.metric(label="Request count", value=len(statuses))
-        display_stats(labels)
-        display_result(data_frame, labels, statuses, datetimes, uuids)
+            metric_placeholder.metric(label="Request count", value=len(statuses))
+            display_stats(labels)
+            display_result(inputs, labels, statuses, datetimes, uuids)
+    else:
+        if uploaded_file:    
+            data_frame = pd.read_csv(uploaded_file)
+            for _, row in data_frame.iterrows():
+                try:
+                    # Create identifier for this prediction
+                    uuid_str = str(uuid.uuid4())
+                    uuids.append(uuid_str)
+                    
+                    # Capture the timestamp of prediction
+                    now = datetime.now()
+                    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+                    datetimes.append(date_time)
+
+                    # Classify the record
+                    inputs.append(row['text'])
+                    label = predict(row['text'], uuid_str, playground_url, auth_token)
+
+                    # Insert the label into labels
+                    labels.append(label)
+                    
+                    # Insert the API call status into statuses
+                    statuses.append(True)
+                except Exception as e:
+                    logging.error(e)
+
+                    # add label as None if necessary
+                    if len(labels) < data_frame.shape[0]:
+                        labels.append(None)
+                    statuses.append(False)
+
+            metric_placeholder.metric(label="Request count", value=len(statuses))
+            display_stats(labels)
+            display_result(inputs, labels, statuses, datetimes, uuids)
 
 if __name__ == "__main__":
     main()
