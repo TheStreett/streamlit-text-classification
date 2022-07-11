@@ -182,7 +182,7 @@ def main():
     local_css("style.css")
 
     # Set the API url accordingly based on AIModelShare Playground API.
-    playground_url = "https://2hewh9dkmh.execute-api.us-east-1.amazonaws.com"
+    playground_url = "https://zf3g9o9owf.execute-api.us-east-1.amazonaws.com"
 
     # Get the query parameter
     params = st.experimental_get_query_params()
@@ -224,7 +224,7 @@ import json
 import requests
 import streamlit as st
 
-playground_url = "https://n0l8kcy3wh.execute-api.us-east-1.amazonaws.com"
+playground_url = "https://zf3g9o9owf.execute-api.us-east-1.amazonaws.com"
 auth_token = st.experimental_get_query_params()['token'][0]
 data = {
     'col1': ['val1'],
